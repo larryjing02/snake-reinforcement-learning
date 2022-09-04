@@ -14,7 +14,8 @@ class Snake:
     self.head = Node(x_max//2, y_max//2)
     self.tail = self.head
     self.len = 1
-
+    
+    # Global Heading 0-N, 1-E, 2-S, 3-W
     self.heading = 0
 
     self.food_x = 0
@@ -52,7 +53,7 @@ class Snake:
     new_x, new_y = self.head.move(DIR[self.heading])
 
     if self.isCollision(new_x, new_y):
-      return False
+      return 0
 
     # Move head to target (push onto linked list)
     temp = self.head
@@ -63,10 +64,11 @@ class Snake:
     if (new_x == self.food_x and new_y == self.food_y):
       self.len += 1
       self.placeFood()
+      return 2
     else:
       self.tail = self.tail.prev
       self.tail.next = None
-    return True
+      return 1
 
   def isCollision(self, x, y):
     return x < 0 or y < 0 or x >= self.x_max or y >= self.y_max or self.contains(x,y)

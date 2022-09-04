@@ -9,78 +9,91 @@ BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 GREEN = (0, 255, 0)
 
-GAME_CYCLE_DELAY = True
-GAME_CYCLE_TIME = 0.5
+GAME_CYCLE_DELAY = False
+GAME_OVER_DELAY = False
+GAME_CYCLE_TIME = 0.03
 GAME_OVER_TIME = 5
 
-
 # Set up the drawing window
-window_blocks_x = 8
-window_blocks_y = 8
+window_blocks_x = 16
+window_blocks_y = 16
 block_size = 40
 block_border = 2
-# window_blocks_x = 80
-# window_blocks_y = 80
-# block_size = 8
-# block_border = 1
-screen = pygame.display.set_mode([window_blocks_x*block_size, window_blocks_y*block_size])
 
-
-
-# Snake set as a list of tuples, each representing a point
-snake = Snake(window_blocks_x, window_blocks_y)
-heading = 0
-
-
-def refreshScreen():
-  screen.fill(BLACK)
-  
-  cur = snake.head
-  while cur:
-    drawPoint(cur.x, cur.y, WHITE)
-    cur = cur.next
-  
-  drawPoint(snake.food_x, snake.food_y, GREEN)
-
-
-  # Flip the display
-  pygame.display.flip()
-
-def drawPoint(x, y, color):
-  point = (x*block_size+block_border, y*block_size+block_border)
-  rect = pygame.Rect(point, (block_size-2*block_border, block_size-2*block_border))
-  pygame.draw.rect(screen, color, rect)
-
-# Run until the user asks to quit
-running = True
-while running:
-
-  # Did the user click the window close button?
-  for event in pygame.event.get():
-    if event.type == pygame.QUIT:
-      running = False
-      break
-    if event.type == pygame.KEYDOWN:
-      if event.key == pygame.K_LEFT:
-        snake.turn(1)
-      elif event.key == pygame.K_RIGHT:
-        snake.turn(2)
+class SnakeGame:
+  def __init__(self):
+    self.screen = pygame.display.set_mode([window_blocks_x*block_size, window_blocks_y*block_size])
     
-  if snake.move():
-    refreshScreen()
-    # print("------------------------")
-    # print(snake.head)
-    # print("------------------------")
-  else:
-    print("Game Over")
-    sleep(GAME_OVER_TIME)
-    running = False
+    self.resetGame()
+  
+  def resetGame(self):
+    # Snake set as a list of tuples, each representing a point
+    self.snake = Snake(window_blocks_x, window_blocks_y)
+    self.iterations = 0
 
-  if GAME_CYCLE_DELAY:
-    sleep(GAME_CYCLE_TIME)
+  def refreshScreen(self):
+    self.screen.fill(BLACK)
+    
+    # Draw snake body
+    cur = self.snake.head
+    while cur:
+      self.drawPoint(cur.x, cur.y, WHITE)
+      cur = cur.next
+    
+    # Draw food
+    self.drawPoint(self.snake.food_x, self.snake.food_y, GREEN)
+
+    # Flip the display
+    pygame.display.flip()
+    
+
+  def drawPoint(self, x, y, color):
+    point = (x*block_size+block_border, y*block_size+block_border)
+    rect = pygame.Rect(point, (block_size-2*block_border, block_size-2*block_border))
+    pygame.draw.rect(self.screen, color, rect)
+
+  def step(self, turn=0):
+    # Did the user click the window close button?
+    for event in pygame.event.get():
+      if event.type == pygame.QUIT:
+        pygame.quit()
+        quit()
+      # Take user input
+      # if event.type == pygame.KEYDOWN:
+      #   if event.key == pygame.K_LEFT:
+      #     self.snake.turn(1)
+      #   elif event.key == pygame.K_RIGHT:
+      #     self.snake.turn(2)
+    self.snake.turn(turn)
+    
+    self.iterations += 1
+
+    # Make move; 0 = died, 1 = survived, 2 = ate food
+    result = self.snake.move()
+    if self.iterations < 100*self.snake.len and result > 0:
+      self.refreshScreen()
+      reward = 0
+      if result == 2:
+        reward = 10
+      if GAME_CYCLE_DELAY:
+        sleep(GAME_CYCLE_TIME)
+      return reward, False, self.snake.len
+    else:
+      print(f"Final Score: {self.snake.len}")
+      if GAME_OVER_DELAY:
+        sleep(GAME_OVER_TIME)
+      return -10, True, self.snake.len
 
 
+# if __name__ == '__main__':
+#   game = SnakeGame()
+  
+#   # game loop
+#   while True:
+#       reward, result, score = game.step()
+#       # print(f"Reward: {reward}")
+#       if result:
+#         game.resetGame()
 
-
-
-pygame.quit()
+      
+#   pygame.quit()
