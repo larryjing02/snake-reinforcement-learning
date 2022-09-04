@@ -10,19 +10,19 @@ WHITE = (255, 255, 255)
 GREEN = (0, 255, 0)
 
 GAME_CYCLE_DELAY = True
-GAME_CYCLE_TIME = 0.5
+GAME_CYCLE_TIME = 0.1
 GAME_OVER_TIME = 5
 
 
 # Set up the drawing window
-window_blocks_x = 8
-window_blocks_y = 8
-block_size = 40
-block_border = 2
-# window_blocks_x = 80
-# window_blocks_y = 80
-# block_size = 8
-# block_border = 1
+# window_blocks_x = 8
+# window_blocks_y = 8
+# block_size = 40
+# block_border = 2
+window_blocks_x = 80
+window_blocks_y = 80
+block_size = 8
+block_border = 1
 screen = pygame.display.set_mode([window_blocks_x*block_size, window_blocks_y*block_size])
 
 
@@ -72,7 +72,7 @@ while running:
     # print(snake.head)
     # print("------------------------")
   else:
-    print("Game Over")
+    print(f"Final Score: {snake.len}")
     sleep(GAME_OVER_TIME)
     running = False
 
