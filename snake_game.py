@@ -1,5 +1,6 @@
 from snake import Snake
 from time import sleep
+from math import sqrt
 import pygame
 
 pygame.init()
@@ -11,7 +12,7 @@ GREEN = (0, 255, 0)
 
 GAME_CYCLE_DELAY = False
 GAME_OVER_DELAY = False
-GAME_CYCLE_TIME = 0.03
+GAME_CYCLE_TIME = 0.1
 GAME_OVER_TIME = 5
 
 # Set up the drawing window
@@ -72,9 +73,9 @@ class SnakeGame:
     result = self.snake.move()
     if self.iterations < 100*self.snake.len and result > 0:
       self.refreshScreen()
-      reward = 0
+      reward = self.distToFood()
       if result == 2:
-        reward = 10
+        reward += 10
       if GAME_CYCLE_DELAY:
         sleep(GAME_CYCLE_TIME)
       return reward, False, self.snake.len
@@ -84,7 +85,11 @@ class SnakeGame:
         sleep(GAME_OVER_TIME)
       return -10, True, self.snake.len
 
-
+  def distToFood(self):
+    delta_x = self.snake.head.x - self.snake.food_x
+    delta_y = self.snake.head.y - self.snake.food_y
+    return int(window_blocks_x/2-sqrt(delta_x**2 + delta_y**2))
+    
 # if __name__ == '__main__':
 #   game = SnakeGame()
   

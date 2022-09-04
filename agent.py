@@ -3,6 +3,7 @@ import random
 import numpy as np
 from snake_game import SnakeGame
 from model import Linear_QNet, QTrainer
+from plotter import plot
 from collections import deque
 
 MAX_MEMORY = 100_000
@@ -94,9 +95,9 @@ class Agent:
 
 
 def train():
-  # plot_scores = []
-  # plot_mean_scores = []
-  # total_score = 0
+  plot_scores = []
+  plot_mean_scores = []
+  total_score = 0
   record = 0
   agent = Agent()
   game = SnakeGame()
@@ -119,6 +120,8 @@ def train():
     agent.remember(state_old, final_move, reward, state_new, done)
 
     if done:
+      print(f"Game {agent.game_count}\t|\tScore:{score}\t|\tRecord: {record}\t|\tIterations: {game.iterations}")
+      
       # train long memory, plot result
       game.resetGame()
       agent.game_count += 1
@@ -128,7 +131,6 @@ def train():
         record = score
         agent.model.save()
 
-      print('Game', agent.game_count, 'Score', score, 'Record:', record)
 
       # plot_scores.append(score)
       # total_score += score
